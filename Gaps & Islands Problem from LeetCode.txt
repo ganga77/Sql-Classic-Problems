@@ -1,4 +1,4 @@
--- Consecutive Available Seats
+Q-- Consecutive Available Seats
 
 -- Create the table
 
@@ -22,7 +22,7 @@ Select *, lead(free, 1, 1000) over(order by seat_id) as ld, lag(free, 1, 1000) o
 )
 Select seat_id from tab1 where free in (ld, lg);
 
--- Find the Start and End Number of Continuous Ranges
+Q-- Find the Start and End Number of Continuous Ranges
 
 CREATE TABLE logs (
     log_id INT PRIMARY KEY
@@ -45,7 +45,7 @@ Select min(log_id) as minimum,
 max(log_id) as maximum from tab1
 group by seq;
 
--- 
+Q-- Active Users. Active users are those who logged in to their accounts for five or more consecutive days. Write an SQL query to find the id and the name of active users.
 
 
 -- Create the Accounts table
@@ -120,4 +120,3 @@ Select  sq from tab1 group by sq having count(sq)>=3
 Select id from tab1 where sq  = (Select sq from tab2);
 
 
--- 

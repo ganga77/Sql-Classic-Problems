@@ -1,0 +1,123 @@
+-- Consecutive Available Seats
+
+-- Create the table
+
+drop table seats;
+-- Create the table
+CREATE TABLE seats (
+    seat_id INT PRIMARY KEY,
+    free INT
+);
+
+-- Insert the values
+INSERT INTO seats (seat_id, free) VALUES
+(1, 1),
+(2, 0),
+(3, 1),
+(4, 1),
+(5, 1);
+
+with tab1 as (
+Select *, lead(free, 1, 1000) over(order by seat_id) as ld, lag(free, 1, 1000) over(order by seat_id) as lg  from seats
+)
+Select seat_id from tab1 where free in (ld, lg);
+
+-- Find the Start and End Number of Continuous Ranges
+
+CREATE TABLE logs (
+    log_id INT PRIMARY KEY
+);
+
+INSERT INTO logs (log_id) VALUES
+(1),
+(2),
+(3),
+(7),
+(8),
+(10);
+
+Select * from logs;
+
+with tab1 as (
+Select *, log_id - row_number() over(order by log_id) as seq from logs
+)
+Select min(log_id) as minimum, 
+max(log_id) as maximum from tab1
+group by seq;
+
+-- 
+
+
+-- Create the Accounts table
+CREATE TABLE Accounts (
+    id INT PRIMARY KEY,
+    name VARCHAR(255)
+);
+
+-- Insert values into the Accounts table
+INSERT INTO Accounts (id, name) VALUES
+(1, 'Winston'),
+(7, 'Jonathan');
+
+-- Create the Logins table
+CREATE TABLE Logins (
+    id INT,
+    login_date DATE
+);
+
+-- Insert values into the Logins table
+INSERT INTO Logins (id, login_date) VALUES
+(7, '2020-05-30'),
+(1, '2020-05-30'),
+(7, '2020-05-31'),
+(7, '2020-06-01'),
+(7, '2020-06-02'),
+(7, '2020-06-02'),
+(7, '2020-06-03'),
+(1, '2020-06-07'),
+(7, '2020-06-10');
+
+Select * from accounts;
+Select * from logins;
+
+with tab1 as (
+Select *, lag(login_date, 1 , login_date) over(order by login_date) as prev_day from logins
+),
+tab2 as (
+Select * from tab1 where DATEDIFF(day, login_date, prev_day) < 0),
+tab3 as (
+Select *, id - lead(id,1,0) over(order by login_date) as sq from tab2
+)
+Select * from tab3;
+
+
+---Write an SQL query to display the records with three or more rows with consecutive id's, and the number of people is greater than or equal to 100 for each.
+
+-- Create the table
+CREATE TABLE Visits (
+    id INT PRIMARY KEY,
+    visit_date DATE,
+    people INT
+);
+
+-- Insert the values
+INSERT INTO Visits (id, visit_date, people) VALUES
+(1, '2017-01-01', 10),
+(2, '2017-01-02', 109),
+(3, '2017-01-03', 150),
+(4, '2017-01-04', 99),
+(5, '2017-01-05', 145),
+(6, '2017-01-06', 1455),
+(7, '2017-01-07', 199),
+(8, '2017-01-09', 188);
+
+with tab1 as(
+Select *, id-row_number() over(order by id) as sq from visits where people >=100
+),
+tab2 as(
+Select  sq from tab1 group by sq having count(sq)>=3
+)
+Select id from tab1 where sq  = (Select sq from tab2);
+
+
+-- 

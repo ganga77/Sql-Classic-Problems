@@ -80,15 +80,10 @@ INSERT INTO Logins (id, login_date) VALUES
 Select * from accounts;
 Select * from logins;
 
-with tab1 as (
-Select *, lag(login_date, 1 , login_date) over(order by login_date) as prev_day from logins
-),
-tab2 as (
-Select * from tab1 where DATEDIFF(day, login_date, prev_day) < 0),
-tab3 as (
-Select *, id - lead(id,1,0) over(order by login_date) as sq from tab2
+with ta1 as (
+Select *, dense_rank() over(partition by id order by login_date) as rn from logins
 )
-Select * from tab3;
+Select name from accounts where id = (Select distinct(id) from ta1 where rn>=5);
 
 
 ---Write an SQL query to display the records with three or more rows with consecutive id's, and the number of people is greater than or equal to 100 for each.
